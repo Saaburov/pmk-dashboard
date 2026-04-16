@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Отчёт СМР — Кампус Яндекс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root,[data-theme="light"]{
+  --bg:#f5f4f0;--surface:#faf9f6;--surface2:#fff;--soff:#eeece8;
+  --border:rgba(0,0,0,0.08);--div:rgba(0,0,0,0.06);
+  --text:#1a1916;--muted:#6b6a65;--faint:#b0afa9;
+  --primary:#01696f;--phl:rgba(1,105,111,0.1);
+  --warn:#9c5a00;--wbg:rgba(156,90,0,0.08);--wb:rgba(156,90,0,0.3);
+  --ok:#437a22;--obg:rgba(67,122,34,0.07);
+  --info:#006494;--ibg:rgba(0,100,148,0.07);
+  --ss:0 1px 3px rgba(0,0,0,0.07);--sm:0 4px 16px rgba(0,0,0,0.09);
+  --r:.5rem;--rl:.75rem;--fn:"Inter",sans-serif;--mo:"JetBrains Mono",monospace;
+}
+[data-theme="dark"]{
+  --bg:#131210;--surface:#1a1916;--surface2:#201f1c;--soff:#252320;
+  --border:rgba(255,255,255,0.07);--div:rgba(255,255,255,0.05);
+  --text:#d4d2ce;--muted:#737169;--faint:#4a4945;
+  --primary:#4f98a3;--phl:rgba(79,152,163,0.12);
+  --warn:#fba940;--wbg:rgba(251,169,64,0.08);--wb:rgba(251,169,64,0.3);
+  --ok:#6daa45;--obg:rgba(109,170,69,0.08);
+  --info:#5591c7;--ibg:rgba(85,145,199,0.08);
+  --ss:0 1px 3px rgba(0,0,0,0.25);--sm:0 4px 16px rgba(0,0,0,0.35);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums lining-nums}
+body{font-family:var(--fn);font-size:14px;color:var(--text);background:var(--bg);display:flex;min-height:100vh;line-height:1.5}
+.sidebar{width:220px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;flex-shrink:0;max-height:100vh;overflow-y:auto}
+.slogo{padding:16px;border-bottom:1px solid var(--div);display:flex;align-items:center;gap:10px}
+.smark{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;flex-shrink:0}
+.st{font-size:12px;font-weight:600;line-height:1.3}.ss{font-size:10px;color:var(--muted)}
+.snav{padding:10px 8px;flex:1}
+.nsec{font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;padding:8px 10px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left}
+.ni:hover{background:var(--soff);color:var(--text)}.ni.active{background:var(--phl);color:var(--primary);font-weight:500}
+.sfoot{padding:10px 8px;border-top:1px solid var(--div)}
+.tbtn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;font-size:11px;color:var(--muted);background:none;border:none;width:100%;transition:all .15s}
+.tbtn:hover{background:var(--soff);color:var(--text)}
+.main{flex:1;overflow-x:hidden;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 22px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:10;gap:12px;flex-wrap:wrap}
+.tbt{font-size:15px;font-weight:600}.tbm{font-size:11px;color:var(--muted);margin-top:1px}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:500}
+.bw{background:var(--wbg);color:var(--warn);border:1px solid var(--wb)}
+.bm{background:var(--obg);color:var(--ok)}.bn{background:var(--soff);color:var(--muted)}.bi{background:var(--ibg);color:var(--info)}
+.page{display:none;padding:20px 22px;animation:fi .2s ease}.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.stl{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.hint{background:var(--ibg);border:1px solid rgba(85,145,199,0.15);border-radius:var(--rl);padding:13px 15px;margin-bottom:18px;font-size:12px;color:var(--muted);line-height:1.7}
+.hint strong{color:var(--text)}.hint em{font-style:italic}
+.htl{font-size:11px;font-weight:600;color:var(--info);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.kg{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:13px;box-shadow:var(--ss)}
+.klb{font-size:10px;color:var(--muted);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.kv{font-size:22px;font-weight:700;line-height:1;margin-bottom:3px;font-family:var(--mo)}
+.ks{font-size:10px;color:var(--muted)}
+.vw{color:var(--warn)}.vm{color:var(--ok)}.vn{color:var(--text)}.vp{color:var(--primary)}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:15px;box-shadow:var(--ss)}
+.cc.wide{grid-column:1/-1}
+.cct{font-size:13px;font-weight:600;margin-bottom:2px}.ccs{font-size:11px;color:var(--muted);margin-bottom:11px}
+.cw{position:relative;height:195px}
+.tc{display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;align-items:center}
+.si{flex:1;min-width:160px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-size:12px;outline:none;font-family:var(--fn);transition:border-color .15s}
+.si:focus{border-color:var(--primary)}
+.fb{padding:5px 11px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--fn);transition:all .15s}
+.fb:hover{background:var(--soff);color:var(--text)}.fb.active{background:var(--phl);border-color:var(--primary);color:var(--primary)}
+.tw{overflow-x:auto;border-radius:var(--rl);border:1px solid var(--border);background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:9px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;cursor:pointer}
+th:hover{color:var(--text)}
+td{padding:8px 10px;border-bottom:1px solid var(--div);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--soff)}
+.tid{font-family:var(--mo);font-size:10px;color:var(--muted);white-space:nowrap}
+.twk{max-width:270px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tn{text-align:right;font-family:var(--mo);white-space:nowrap}
+.tdv{text-align:right;font-family:var(--mo);font-weight:600;white-space:nowrap}
+.dw{color:var(--warn)}.dm{color:var(--ok)}.dn{color:var(--faint)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dwd{background:var(--warn)}.dmd{background:var(--ok)}.dnd{background:var(--faint)}
+.tds{display:flex;align-items:center;gap:5px;font-size:11px;white-space:nowrap}
+.pb{width:68px;height:5px;background:var(--soff);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;position:relative}.pb-plan{position:absolute;left:0;top:0;height:100%;background:var(--border);border-radius:3px}.pf{position:absolute;left:0;top:0;height:100%;border-radius:3px;z-index:1}
+.pfw{background:var(--warn)}.pfm{background:var(--ok)}.pfn{background:var(--faint)}
+.cong{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.con{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;box-shadow:var(--ss)}
+.con.warn{border-left:3px solid var(--warn)}.con.info{border-left:3px solid var(--primary)}.con.ok{border-left:3px solid var(--ok)}
+.con.wide{grid-column:1/-1}
+.conh{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.coni{font-size:16px}.cont{font-size:13px;font-weight:600;color:var(--text)}
+.conl{list-style:none}
+.conl li{font-size:12px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--div);display:flex;gap:7px;line-height:1.5}
+.conl li:last-child{border-bottom:none}
+.conl li::before{content:"›";color:var(--faint);flex-shrink:0}
+.conl li b{color:var(--text)}
+.tip{position:fixed;pointer-events:none;z-index:100;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;box-shadow:var(--sm);font-size:12px;max-width:300px;display:none}
+.tip.on{display:block}
+.t1{font-family:var(--mo);font-size:10px;color:var(--faint);margin-bottom:3px}
+.t2{font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.4}
+.t3{display:flex;justify-content:space-between;gap:20px;padding:2px 0;font-size:11px;color:var(--muted)}
+.t4{font-family:var(--mo);font-weight:500;color:var(--text)}
+.t5{margin-top:6px;padding-top:6px;border-top:1px solid var(--div);font-size:11px;color:var(--muted);font-style:italic}
+@media(max-width:640px){.sidebar{display:none}}
+@media(max-width:900px){.cg{grid-template-columns:1fr}.cong{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="slogo">
+    <div class="smark">ПМК</div>
+    <div><div class="st">Кампус Яндекс</div><div class="ss">Тех. заказчик: ООО «ПМК»</div></div>
+  </div>
+  <div class="snav">
+    <div class="nsec">Отчёт СМР</div>
+    <button class="ni active" onclick="showPage('overview',this)">Обзор</button>
+    <button class="ni" onclick="showPage('table',this)">Позиции</button>
+    <button class="ni" onclick="showPage('floors',this)">Этажи</button>
+    <button class="ni" onclick="showPage('conclusions',this)">Выводы</button>
+    <div class="nsec" style="margin-top:12px">Контекст</div>
+    <div style="padding:4px 10px;font-size:11px;color:var(--muted);line-height:2">
+      <div>Неделя 3</div>
+      <div><b style="color:var(--text)">16.04.2026</b></div>
+      <div>Подрядчик: ООО «АРС»</div>
+      <div>Заказчик: Яндекс</div>
+    </div>
+  </div>
+  <div class="sfoot">
+    <button class="tbtn" onclick="toggleTheme()">
+      <span id="themeico">◑</span><span id="themetxt">Светлая тема</span>
+    </button>
+  </div>
+</nav>
+
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tbt">Еженедельный отчёт СМР — Кампус Яндекс</div>
+    <div class="tbm">ООО «ПМК» / Неделя 3 / 16.04.2026 · Подрядчик: ООО «АРС»</div>
+  </div>
+  <span class="badge bw">Зафиксированы отставания — требуется ускорение по ряду позиций</span>
+</div>
+
+<div id="page-overview" class="page active">
+<div class="stl">Ключевые показатели — Неделя 3 (16.04.2026)</div>
+<div class="hint">
+  <div class="htl">Как читать показатели</div>
+  <strong>Факт %</strong> — доля выполненного объёма работы по данным ООО «АРС» (из еженедельного отчёта подрядчика).
+  <strong>Норма ПМК %</strong> — сколько <em>должно быть выполнено к сегодняшнему дню</em> по ГПР.
+  Формула: <em>(количество прошедших дней ÷ общая длительность работы) × 100%</em>.
+  <strong>Отклонение (п.п.)</strong> = Факт − Норма. До −10 п.п. — рабочий диапазон; свыше — нужен план ускорения.
+  <strong>Важно:</strong> резерв времени по большинству позиций ещё есть. Задача — не допустить дальнейшего накопления отставания.
+</div>
+<div class="kg">
+  <div class="kpi"><div class="klb">Ср. факт выполнения</div><div class="kv vw">3.7%</div><div class="ks">среднее по 18 позициям</div></div>
+  <div class="kpi"><div class="klb">Норма ПМК на 16.04</div><div class="kv vn">24.4%</div><div class="ks">расчёт по ГПР</div></div>
+  <div class="kpi"><div class="klb">Ср. отклонение</div><div class="kv vw">−20.6 п.п.</div><div class="ks">факт минус норма</div></div>
+  <div class="kpi"><div class="klb">Выполнено от нормы</div><div class="kv vw">15.3%</div><div class="ks">сделано из должного</div></div>
+  <div class="kpi"><div class="klb">Нужно ускорение</div><div class="kv vw">12</div><div class="ks">позиций (откл. &gt;10 п.п.)</div></div>
+  <div class="kpi"><div class="klb">Незначит. откл.</div><div class="kv vm">6</div><div class="ks">позиций (до −10 п.п.)</div></div>
+  <div class="kpi"><div class="klb">По графику</div><div class="kv vm">0</div><div class="ks">пока нет позиций</div></div>
+  <div class="kpi"><div class="klb">Позиций в отчёте</div><div class="kv vn">18</div><div class="ks">L03, L05–L09</div></div>
+</div>
+<div class="cg">
+  <div class="cc">
+    <div class="cct">Динамика: норма vs факт по неделям</div>
+    <div class="ccs">Пунктир — плановый темп по ГПР; сплошная — фактическое выполнение ООО «АРС»</div>
+    <div class="cw"><canvas id="trendChart"></canvas></div>
+  </div>
+  <div class="cc">
+    <div class="cct">Позиции по статусу отклонения</div>
+    <div class="ccs">Откл. &gt;10 п.п. — план ускорения; до −10 п.п. — рабочий диапазон</div>
+    <div class="cw"><canvas id="statusChart"></canvas></div>
+  </div>
+  <div class="cc wide">
+    <div class="cct">Факт vs Норма ПМК по каждой позиции</div>
+    <div class="ccs">Тёмные столбцы — выполнено; контурные — норматив ПМК на 16.04. Наведите мышь для деталей.</div>
+    <div class="cw" style="height:350px"><canvas id="posChart"></canvas></div>
+  </div>
+</div>
+</div>
+
+<div id="page-table" class="page">
+<div class="stl">Таблица позиций — Неделя 3</div>
+<div class="hint">
+  <div class="htl">Пояснение к таблице</div>
+  <strong>ID по ГПР</strong> — уникальный номер работы из графика производства работ (согласованного с Заказчиком).
+  <strong>Факт %</strong> — данные ООО «АРС» (значение из отчёта × 100%).
+  <strong>Норма ПМК %</strong> — расчётный норматив на сегодня по формуле ПМК.
+  <strong>Откл. п.п.</strong> — разница (факт − норма). До −10 п.п.: рабочий диапазон, устраняется в текущем темпе.
+  Свыше −10 п.п.: требуется план компенсирующих мер.
+  Ряд позиций не начат по причинам вне зоны ответственности ООО «АРС» (передача фронта, дефектовка ЭНКА — ответственность Яндекс/ПМК).
+</div>
+<div class="tc">
+  <input class="si" type="text" placeholder="Поиск по ID, наименованию, этажу..." oninput="filterTable(this.value)">
+  <button class="fb active" onclick="setFilter('all',this)">Все (18)</button>
+  <button class="fb" onclick="setFilter('warn',this)">Ускорение (12)</button>
+  <button class="fb" onclick="setFilter('minor',this)">Незначит. (6)</button>
+</div>
+<div class="tw"><table>
+  <thead><tr>
+    <th onclick="sortT('id')">ID по ГПР ↕</th>
+    <th onclick="sortT('floor')">Этаж ↕</th>
+    <th>Вид работ</th>
+    <th style="text-align:right" onclick="sortT('fact')">Факт % ↕</th>
+    <th style="text-align:right">Прогресс</th>
+    <th style="text-align:right" onclick="sortT('plan')">Норма % ↕</th>
+    <th style="text-align:right" onclick="sortT('dev')">Откл. п.п. ↕</th>
+    <th>Статус</th>
+  </tr></thead>
+  <tbody id="tbody"></tbody>
+</table></div>
+</div>
+
+<div id="page-floors" class="page">
+<div class="stl">Анализ по этажам — Неделя 3</div>
+<div class="hint">
+  <div class="htl">Как читать аналитику по этажам</div>
+  Каждый этаж находится на своей стадии готовности к работам. <strong>L05</strong> — единственный активный этаж, где ООО «АРС» уже работает (фронт передан).
+  <strong>L06–L09</strong> — фронты ещё не переданы или в стадии приёмки (зависит от Яндекс + ПМК).
+  <strong>L03</strong> — контрактование финишного подрядчика (решение на стороне Заказчика).
+  Графики показывают средние значения по всем позициям каждого этажа. Нулевой факт по L06–L09 объясняется блокировками, а не бездействием подрядчика.
+</div>
+<div class="cg">
+  <div class="cc wide">
+    <div class="cct">Факт vs Норма ПМК по этажам</div>
+    <div class="ccs">Средний % выполнения по всем позициям этажа</div>
+    <div class="cw" style="height:210px"><canvas id="floorChart"></canvas></div>
+  </div>
+  <div class="cc wide">
+    <div class="cct">Среднее отклонение от нормы по этажам (п.п.)</div>
+    <div class="ccs">Чем ближе к 0 — тем ближе к плановому темпу. Жёлтый = ускорение нужно, зелёный = рабочий диапазон</div>
+    <div class="cw" style="height:195px"><canvas id="floorDevChart"></canvas></div>
+  </div>
+</div>
+<div class="kg" id="floor-cards"></div>
+</div>
+
+<div id="page-conclusions" class="page">
+<div class="stl">Выводы и рекомендации — 16.04.2026</div>
+<div class="hint">
+  <div class="htl">Оценка ситуации</div>
+  Отставания зафиксированы на ранней стадии освоения объектов. Значительная их часть обусловлена
+  организационными причинами, <b>не зависящими от ООО «АРС»</b>
+  (передача фронтов, контрактование, дефектовка ЭНКА). По большинству позиций <b>резерв времени ещё есть</b>.
+  Задача текущего периода — начать отработку отставания и не допустить его дальнейшего накопления.
+  ООО «АРС» в части L05 должно ускорить темп; ПМК и Яндекс — снять блокировки по остальным этажам.
+</div>
+<div class="cong">
+  <div class="con warn">
+    <div class="conh"><div class="coni"></div><div class="cont">Позиции, требующие ускорения — L05 (ООО «АРС»)</div></div>
+    <ul class="conl">
+      <li><b>Демонтаж стен L05:</b> выполнено 33.6% при норме 60% → −26.4 п.п. Нужно ускорение</li>
+      <li><b>Приёмка площадки L05:</b> 14% при норме 58% → −44 п.п. Требует внимания</li>
+      <li>L05 — единственный активный этаж; <b>темп пока ниже планового</b></li>
+      <li>Рекомендация: совещание с ООО «АРС», согласование плана ускорения до конца недели</li>
+    </ul>
+  </div>
+  <div class="con warn">
+    <div class="conh"><div class="coni"></div><div class="cont">Блокировки — ответственность Яндекс / ПМК</div></div>
+    <ul class="conl">
+      <li><b>L06–L09:</b> фронт не передан — ООО «АРС» не может приступить к работам</li>
+      <li><b>Контрактование L03, L06, L09:</b> финишный подрядчик не выбран Заказчиком</li>
+      <li><b>Дефектовка ЭНКА:</b> не готова на L05–L07, блокирует 3 позиции</li>
+      <li>Эти отставания <b>не являются нарушением со стороны ООО «АРС»</b> — фиксируем письмом</li>
+    </ul>
+  </div>
+  <div class="con info">
+    <div class="conh"><div class="coni"></div><div class="cont">Расхождение в методике расчёта плана</div></div>
+    <ul class="conl">
+      <li>Плановый % в отчёте ООО «АРС» и расчёт ПМК дают разные цифры</li>
+      <li>Пример: 3.1.2.11.8.1 — план АРС 15.4% vs план ПМК 32.6% (разрыв в 2.1×)</li>
+      <li>Причина: разные базы расчёта (длительность периода vs длительность работы)</li>
+      <li>Рекомендация: <b>согласовать единую методику</b> до следующего отчёта</li>
+    </ul>
+  </div>
+  <div class="con ok">
+    <div class="conh"><div class="coni"></div><div class="cont">Резерв времени по ГПР</div></div>
+    <ul class="conl">
+      <li>Большинство работ имеют горизонт <b>до мая–сентября 2026</b> — резерв присутствует</li>
+      <li>Каждая неделя без ускорения <b>сокращает доступный резерв</b></li>
+      <li>Позиции с дедлайном в <b>апреле–мае</b> требуют немедленных компенсирующих мер</li>
+      <li>Рекомендация: <b>начать использование резерва не откладывая</b></li>
+    </ul>
+  </div>
+  <div class="con ok wide">
+    <div class="conh"><div class="coni"></div><div class="cont">Рекомендуемые действия — следующая неделя</div></div>
+    <ul class="conl" style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+      <li><b>До пятницы:</b> официальное письмо Яндексу о блокировках по L06–L09</li>
+      <li><b>До пятницы:</b> совещание с ООО «АРС» — план ускорения по L05</li>
+      <li><b>До пятницы:</b> согласовать единую методику расчёта план% с ООО «АРС»</li>
+      <li><b>До пятницы:</b> получить статус контрактования L03, L06, L09 от Яндекса</li>
+      <li><b>Следующий отчёт:</b> разделить отставания по зонам ответственности</li>
+      <li><b>Следующий отчёт:</b> добавить столбец «Причина / зона ответственности»</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const ROWS=[
+  {"id": "3.1.2.11.8.1", "floor": "L03", "work": "Контрактование и оплата аванса (КРОК)", "fact": 0.0, "plan": 32.6, "dev": -32.6, "cat": "warn", "note": "Подрядчик не выбран Заказчиком (Яндекс)"},
+  {"id": "3.1.4.1.1.2", "floor": "L05", "work": "Приёмка площадки и составление дефектной ведомости", "fact": 14.0, "plan": 58.0, "dev": -44.0, "cat": "warn", "note": "Исполнитель: АРС"},
+  {"id": "3.1.4.1.1.3", "floor": "L05", "work": "Устранение замечаний согл. дефектной ведомости (ЭНКА)", "fact": 0.0, "plan": 36.1, "dev": -36.1, "cat": "warn", "note": "Дефектовка ЭНКА не готова (ответственность Яндекс/ПМК)"},
+  {"id": "3.1.4.2.1.1", "floor": "L05", "work": "Демонтаж временных стен и дверей", "fact": 33.6, "plan": 60.0, "dev": -26.4, "cat": "warn", "note": "Исполнитель: АРС"},
+  {"id": "3.1.4.4.3.1", "floor": "L05", "work": "Очистка и выравнивание подфальшпольного пространства", "fact": 0.0, "plan": 7.9, "dev": -7.9, "cat": "minor", "note": "Плановый показатель невысокий — работы только начались"},
+  {"id": "3.1.4.6.1.1", "floor": "L05", "work": "Подготовка стен и перегородок к финишной отделке", "fact": 5.6, "plan": 9.0, "dev": -3.4, "cat": "minor", "note": "Исполнитель: АРС"},
+  {"id": "3.1.5.1.1.2", "floor": "L06", "work": "Приёмка площадки и составление дефектной ведомости", "fact": 14.0, "plan": 43.1, "dev": -29.1, "cat": "warn", "note": "Исполнитель: АРС"},
+  {"id": "3.1.5.1.1.3", "floor": "L06", "work": "Устранение замечаний согл. дефектной ведомости (ЭНКА)", "fact": 0.0, "plan": 24.6, "dev": -24.6, "cat": "warn", "note": "Дефектовка ЭНКА не готова"},
+  {"id": "3.1.5.2.1.1", "floor": "L06", "work": "Демонтаж временных стен и дверей", "fact": 0.0, "plan": 23.8, "dev": -23.8, "cat": "warn", "note": "Исполнитель: АРС"},
+  {"id": "3.1.5.4.3.1", "floor": "L06", "work": "Очистка и выравнивание подфальшпольного пространства", "fact": 0.0, "plan": 3.3, "dev": -3.3, "cat": "minor", "note": ""},
+  {"id": "3.1.5.6.1.1", "floor": "L06", "work": "Подготовка стен и перегородок к финишной отделке", "fact": 0.0, "plan": 3.8, "dev": -3.8, "cat": "minor", "note": "Исполнитель: АРС"},
+  {"id": "3.1.5.11.8.1", "floor": "L06", "work": "Контрактование и оплата аванса (КРОК)", "fact": 0.0, "plan": 32.6, "dev": -32.6, "cat": "warn", "note": "Подрядчик не выбран Заказчиком (Яндекс)"},
+  {"id": "3.1.6.1.1.2", "floor": "L07", "work": "Приёмка площадки и составление дефектной ведомости", "fact": 0.0, "plan": 29.4, "dev": -29.4, "cat": "warn", "note": "Площадка не передана (Яндекс)"},
+  {"id": "3.1.6.1.1.3", "floor": "L07", "work": "Устранение замечаний согл. дефектной ведомости (ЭНКА)", "fact": 0.0, "plan": 13.1, "dev": -13.1, "cat": "warn", "note": "Дефектовка ЭНКА не готова"},
+  {"id": "3.1.7.1.1.2", "floor": "L08", "work": "Приёмка площадки и составление дефектной ведомости", "fact": 0.0, "plan": 17.6, "dev": -17.6, "cat": "warn", "note": "Площадка не передана (Яндекс)"},
+  {"id": "3.1.7.1.1.3", "floor": "L08", "work": "Устранение замечаний согл. дефектной ведомости (ЭНКА)", "fact": 0.0, "plan": 3.2, "dev": -3.2, "cat": "minor", "note": "Дефектовка ЭНКА не готова"},
+  {"id": "3.1.8.1.1.2", "floor": "L09", "work": "Приёмка площадки и составление дефектной ведомости", "fact": 0.0, "plan": 7.8, "dev": -7.8, "cat": "minor", "note": "Площадка не передана (Яндекс)"},
+  {"id": "3.1.8.11.8.1", "floor": "L09", "work": "Контрактование и оплата аванса", "fact": 0.0, "plan": 32.6, "dev": -32.6, "cat": "warn", "note": "Подрядчик не выбран Заказчиком (Яндекс)"}
+];
+const FLOORS=["L03", "L05", "L06", "L07", "L08", "L09"];
+const FA=[0.0, 10.6, 2.3, 0.0, 0.0, 0.0];
+const PA=[32.6, 34.2, 21.9, 21.2, 10.4, 20.2];
+const DA=[-32.6, -23.6, -19.5, -21.2, -10.4, -20.2];
+
+let cF="all",cS="",sK="id",sD=1;
+function showPage(id,btn){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".ni").forEach(b=>b.classList.remove("active"));document.getElementById("page-"+id).classList.add("active");btn.classList.add("active");}
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute("data-theme")==="dark";h.setAttribute("data-theme",d?"light":"dark");document.getElementById("themeico").textContent=d?"◐":"◑";document.getElementById("themetxt").textContent=d?"Тёмная тема":"Светлая тема";updateCharts();}
+function setFilter(f,btn){cF=f;document.querySelectorAll(".fb").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderTable();}
+function filterTable(v){cS=v.toLowerCase();renderTable();}
+function sortT(k){if(sK===k)sD*=-1;else{sK=k;sD=1;}renderTable();}
+function bc(c){return c==="warn"?"pfw":c==="minor"?"pfm":"pfn";}
+function lbl(c){return c==="warn"?"Требует ускорения":c==="minor"?"Незнач. отклонение":"По графику";}
+function dc2(c){return c==="warn"?"dwd":c==="minor"?"dmd":"dnd";}
+function dcs(d){return d<=-10?"dw":d<0?"dm":"dn";}
+function renderTable(){
+  let rows=[...ROWS];
+  if(cF!=="all")rows=rows.filter(r=>r.cat===cF);
+  if(cS)rows=rows.filter(r=>r.id.toLowerCase().includes(cS)||r.work.toLowerCase().includes(cS)||r.floor.toLowerCase().includes(cS));
+  rows.sort((a,b)=>{let av=a[sK]??0,bv=b[sK]??0;if(typeof av==="string")return av.localeCompare(bv)*sD;return (av-bv)*sD;});
+  document.getElementById("tbody").innerHTML=rows.map(r=>{
+    const pct=Math.min(100,Math.max(0,r.fact)),b=bc(r.cat),ds=r.dev===0?"—":(r.dev>0?"+":"")+r.dev.toFixed(1);
+    const rd=JSON.stringify(r).replace(/'/g,"&#39;");
+    return "<tr onmouseenter='showTip(event,"+rd+")' onmouseleave='hideTip()'>"
+      +"<td class='tid'>"+r.id+"</td><td><span class='badge bn'>"+r.floor+"</span></td>"
+      +"<td class='twk'><span title='"+r.work.replace(/'/g,"&#39;")+"'>"+r.work+"</span></td>"
+      +"<td class='tn "+dcs(r.dev)+"'>"+r.fact.toFixed(1)+"%</td>"
+      +"<td class='tn'><span class='pb' title='"+r.fact.toFixed(1)+"% выполнено из "+r.plan.toFixed(1)+"%'><span class='pb-plan' style='width:"+Math.min(100,r.plan)+"%'></span><span class='pf "+b+"' style='width:"+pct+"%'></span></span></td>"
+      +"<td class='tn' style='color:var(--muted)'>"+r.plan.toFixed(1)+"%</td>"
+      +"<td class='tdv "+dcs(r.dev)+"'>"+ds+"</td>"
+      +"<td><span class='tds'><span class='dot "+dc2(r.cat)+"'></span>"+lbl(r.cat)+"</span></td></tr>";
+  }).join("");
+}
+function showTip(e,r){
+  const t=document.getElementById("tip"),dv=r.dev.toFixed(1),dc=r.dev<=-10?"dw":r.dev<0?"dm":"";
+  t.innerHTML="<div class='t1'>"+r.id+" · "+r.floor+"</div><div class='t2'>"+r.work+"</div>"
+    +"<div class='t3'><span>Факт</span><span class='t4'>"+r.fact.toFixed(1)+"%</span></div>"
+    +"<div class='t3'><span>Норма ПМК</span><span class='t4'>"+r.plan.toFixed(1)+"%</span></div>"
+    +"<div class='t3'><span>Отклонение</span><span class='t4 "+dc+"'>"+(r.dev>0?"+":"")+dv+" п.п.</span></div>"
+    +"<div class='t3'><span>Статус</span><span class='t4'>"+lbl(r.cat)+"</span></div>"
+    +(r.note?"<div class='t5'>"+r.note+"</div>":"");
+  t.classList.add("on");moveTip(e);
+}
+function moveTip(e){const t=document.getElementById("tip");t.style.left=(e.clientX+14)+"px";t.style.top=(e.clientY-10)+"px";}
+function hideTip(){document.getElementById("tip").classList.remove("on");}
+document.addEventListener("mousemove",moveTip);
+function renderFloorCards(){
+  document.getElementById("floor-cards").innerHTML=FLOORS.map((f,i)=>{
+    const d=DA[i],cls=d<=-10?"vw":d<0?"vm":"";
+    return "<div class='kpi'><div class='klb'>"+f+"</div><div class='kv "+cls+"'>"+d.toFixed(1)+" п.п.</div><div class='ks'>Факт "+FA[i].toFixed(1)+"% / Норма "+PA[i].toFixed(1)+"%</div></div>";
+  }).join("");
+}
+let tC,sC,pC,fC,fdC;
+function v(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function buildCharts(){
+  const labels=ROWS.map(r=>r.id),facts=ROWS.map(r=>r.fact),plans=ROWS.map(r=>r.plan);
+  tC=new Chart(document.getElementById("trendChart").getContext("2d"),{type:"line",
+    data:{labels:["Нед.1","Нед.2","Нед.3"],datasets:[
+      {label:"Факт %",data:[0.5,1.8,3.7],borderColor:v("--warn"),backgroundColor:"transparent",tension:.4,pointRadius:4,borderWidth:2},
+      {label:"Норма ПМК %",data:[8.2,16.3,24.4],borderColor:v("--primary"),backgroundColor:"transparent",tension:.4,pointRadius:4,borderWidth:2,borderDash:[5,3]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:v("--muted"),font:{size:11}}}},
+      scales:{x:{grid:{color:v("--div")},ticks:{color:v("--muted"),font:{size:11}}},y:{grid:{color:v("--div")},ticks:{color:v("--muted"),font:{size:11},callback:v=>v+"%"},suggestedMax:30}}}});
+  sC=new Chart(document.getElementById("statusChart").getContext("2d"),{type:"doughnut",
+    data:{labels:["Ускорение (12)","Незначит. (6)"],datasets:[{data:[12,6],backgroundColor:[v("--warn"),v("--ok")],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"68%",plugins:{legend:{position:"bottom",labels:{color:v("--muted"),font:{size:11},padding:12}}}}});
+  pC=new Chart(document.getElementById("posChart").getContext("2d"),{type:"bar",
+    data:{labels:labels,datasets:[
+      {label:"Факт % (ООО «АРС»)",data:facts,backgroundColor:facts.map((f,i)=>ROWS[i].cat==="warn"?v("--warn")+"bb":v("--ok")+"bb")},
+      {label:"Норма ПМК %",data:plans,backgroundColor:v("--primary")+"33",borderColor:v("--primary"),borderWidth:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:v("--muted"),font:{size:11}}}},
+      scales:{x:{grid:{color:v("--div")},ticks:{color:v("--muted"),font:{size:10},maxRotation:45,minRotation:30}},y:{grid:{color:v("--div")},ticks:{color:v("--muted"),font:{size:11},callback:v=>v+"%"},max:100}}}});
+  fC=new Chart(document.getElementById("floorChart").getContext("2d"),{type:"bar",
+    data:{labels:FLOORS,datasets:[
+      {label:"Факт %",data:FA,backgroundColor:v("--warn")+"bb"},
+      {label:"Норма ПМК %",data:PA,backgroundColor:v("--primary")+"44",borderColor:v("--primary"),borderWidth:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:v("--muted"),font:{size:11}}}},
+      scales:{x:{grid:{color:v("--div")},ticks:{color:v("--muted")}},y:{grid:{color:v("--div")},ticks:{color:v("--muted"),callback:v=>v+"%"},max:70}}}});
+  fdC=new Chart(document.getElementById("floorDevChart").getContext("2d"),{type:"bar",
+    data:{labels:FLOORS,datasets:[{label:"Ср. откл. п.п.",data:DA,backgroundColor:DA.map(d=>d<-10?v("--warn")+"bb":v("--ok")+"bb")}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:v("--muted"),font:{size:11}}}},
+      scales:{x:{grid:{color:v("--div")},ticks:{color:v("--muted")}},y:{grid:{color:v("--div")},ticks:{color:v("--muted"),callback:v=>v+" п.п."}}}}});
+}
+function updateCharts(){[tC,sC,pC,fC,fdC].forEach(c=>{if(c)c.destroy();});buildCharts();}
+renderTable();renderFloorCards();buildCharts();
+</script></body></html>
